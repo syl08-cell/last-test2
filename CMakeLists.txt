@@ -10,7 +10,7 @@
 # ============================================================================
 cmake_minimum_required(VERSION 3.10)
 project(armor LANGUAGES CXX)
-# 用 C++14。这个标准够用，也不用装更新的编译器。
+# 用 C++14。
 set(CMAKE_CXX_STANDARD 14)
 # Release 会让程序跑得快一些。调试的时候可以改成 Debug。
 if (NOT CMAKE_BUILD_TYPE)
@@ -21,7 +21,6 @@ endif()
 # ----------------------------------------------------------------------------
 #  任务一把 OpenCV 装在了 /usr/local/opencv4.5.4，
 #  这个位置不是系统的默认搜索路径，所以要手动告诉 CMake 去哪找。
-#  如果你装到别的地方，只改下面这一行。
 set(OPENCV_PATH "/usr/local/opencv4.5.4")
 if (EXISTS "${OPENCV_PATH}/lib/cmake/opencv4/OpenCVConfig.cmake")
     set(OpenCV_DIR "${OPENCV_PATH}/lib/cmake/opencv4")

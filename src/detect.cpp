@@ -1,13 +1,10 @@
 // ============================================================================
-//  detect.cpp  ——  真正干活的地方
-// ----------------------------------------------------------------------------
 //  一共 4 步：转灰度 → 二值化 → 找轮廓 → 配对画框。
-//  注释里带 ★ 的地方，是你这次新遇到的知识，就地解释，不用背。
 // ============================================================================
 #include "detect.h"
 #include "config.h"
 #include <algorithm>   // std::min / std::max
-#include <cstdlib>     // std::abs（求绝对值）
+#include <cstdlib>     // std::abs
 // ============================================================================
 //  小函数 1：这个矩形像不像一根灯条？
 // ----------------------------------------------------------------------------
@@ -16,9 +13,8 @@
 //      r.y       左上角的 y（纵坐标，向下变大）
 //      r.width   宽
 //      r.height  高
-//  注意：图像坐标的 y 是"向下"的，所以 y 越小越靠上。
 // ============================================================================
-bool isBar(cv::Rect r)
+bool isBar(cv::Rect r) //r是一个矩形
 {
     // 太矮或太高，不要
     if (r.height < MIN_H || r.height > MAX_H)
@@ -45,12 +41,12 @@ bool isBar(cv::Rect r)
 //    如果一根矩形的正下方（左右位置差不多）还有一根更高的矩形，
 //    那它多半是倒影，删掉。
 //
-//  ★ 新知识：std::vector（读作"维克特"）= 可以自动变长的数组。
-//    你现在不用会它，先把它当成一个"盒子"：
+//  ★ std::vector = 可以自动变长的数组。
+//        当成一个"盒子"：
 //        bars.push_back(东西)   往盒子里放一个
 //        bars.size()            盒子里有几个
-//        bars[i]                第 i 个（从 0 开始数）
-//    普通数组 int a[10] 长度写死，vector 想放多少放多少，所以 OpenCV 都用它。
+//        bars[i]                第 i 个（从 0 开始）       
+//    普通数组 int a[10] 长度写死，vector 想放多少放多少。
 //
 //  ★ 参数里的 & 是"引用"：这里直接改调用者传进来的那个盒子，不复制。
 // ============================================================================
@@ -59,7 +55,7 @@ void dropShadow(std::vector<cv::Rect>& bars)
     std::vector<cv::Rect> keep;   // 新的盒子，装"不是倒影"的
     for (int i = 0; i < (int)bars.size(); i++)
     {
-        bool isShadow = false;    // bool = 真/假，只有 true 和 false 两个值
+        bool isShadow = false;  
         for (int j = 0; j < (int)bars.size(); j++)
         {
             if (i == j)
@@ -96,7 +92,7 @@ void drawBox(cv::Mat& frame)
     // ------------------------------------------------------------------
     //  ★ cv::Mat 是 OpenCV 里"一张图"的类型，你可以当成一个变量。
     //  ★ cvtColor = 转换颜色格式。COLOR_BGR2GRAY = BGR转灰度。
-    //    OpenCV 的彩色图是 BGR 顺序（蓝绿红），不是 RGB，记一下就行。
+    //    OpenCV 的彩色图是 BGR 顺序（蓝绿红），不是 RGB。
     cv::Mat gray;
     cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
     // ------------------------------------------------------------------
@@ -104,7 +100,7 @@ void drawBox(cv::Mat& frame)
     // ------------------------------------------------------------------
     //  规则很简单：灰度 > GRAY_MIN 的像素变白(255)，其余变黑(0)。
     //  得到的 mask 是一张黑白图，白色就是"亮的地方"。
-    //  ★ mask 叫"掩码"，就是一张黑白图，白色表示"这里我要"。
+    //  ★ mask 叫"掩码"，就是一张黑白图。
     cv::Mat mask;
     cv::threshold(gray, mask, GRAY_MIN, 255, cv::THRESH_BINARY);
     // ------------------------------------------------------------------
@@ -132,7 +128,7 @@ void drawBox(cv::Mat& frame)
         cv::Rect r = cv::boundingRect(contours[i]);
         if (isBar(r))
         {
-            bars.push_back(r);
+            bars.push_back(r); //往末尾加一个
         }
     }
     // 把倒影删掉，剩下的才是真灯条
@@ -163,8 +159,8 @@ void drawBox(cv::Mat& frame)
                 continue;
             }
             // 走到这里说明这两根配上了。先分清楚哪根在左、哪根在右。
-            // ★ 交换两个变量要借助第三个变量，就像换两杯水要一个空杯子。
-            cv::Rect L = bars[i];
+            // 交换左右
+            cv::Rect L = bars[i]; //Rect = rectangle
             cv::Rect R = bars[j];
             if (L.x > R.x)
             {
@@ -186,8 +182,8 @@ void drawBox(cv::Mat& frame)
             cv::Rect box(x1, y1, x2 - x1, y2 - y1);
             // ★ rectangle = 画矩形。(0,255,0) 是绿色（BGR），2 是线宽。
             cv::rectangle(frame, box, cv::Scalar(0, 255, 0), 2);
-            // 只画一个框：找到第一对合格的，画完就走。
-            return;
+            // 只画一个框：找到第一对合格的。
+            return; //画完直接结束函数
         }
     }
 }

@@ -5,8 +5,8 @@
 //  算法都在 detect.cpp 里，这里一行算法都没有。
 // ============================================================================
 #include <opencv2/opencv.hpp>
-#include <iostream>   // std::cout 输出文字
-#include <string>     // std::string 存字符串（一串字符）
+#include <iostream>   // std::cout 
+#include <string>     // std::string 
 #include "detect.h"
 int main(int argc, char** argv)
 {
@@ -70,7 +70,7 @@ int main(int argc, char** argv)
         out.write(frame);      // write = 把这一帧写进 out.avi
         cv::imshow("armor", frame);
         // ★ waitKey 必须调用，窗口才会刷新。30 表示最多等 30 毫秒。
-        //   返回值是你按下的键的编号：ESC 是 27，空格是 32。
+        //   返回值是按下的键的编号：ESC 是 27，空格是 32。
         int key = cv::waitKey(30);
         if (key == 27)         // ESC：退出
         {
