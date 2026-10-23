@@ -1,0 +1,9 @@
+# 编译产生的东西
+build/
+
+# 输出的视频
+out.avi
+
+# 视频文件不提交
+data/*.avi
+data/*.mp4
